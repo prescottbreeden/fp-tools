@@ -1,5 +1,5 @@
 # fp-utils
-smattering of fp utils I find myself looking for when I'm experimenting with ideas with several deviations from ramda that always irk me
+smattering of fp utils I find myself looking for when I'm experimenting with ideas with several deviations from ramda that always irk me such as less strict typing on compose, such as gt and lt reversed cause why the hell would gt(1) mean x < 1 and not x > 1.
 
 ## Functions
 - compose 
