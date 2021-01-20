@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Maybe = void 0;
-const src_1 = require("src");
+const _1 = require("./");
 // ============================================================
-//                      -- Maybe -- 
+//                      -- Maybe --
 // ============================================================
 class Maybe {
     constructor(x) {
@@ -36,7 +36,7 @@ class Maybe {
     }
     // ----- Traversable Maybe
     sequence(of) {
-        return this.traverse(of, src_1.identity);
+        return this.traverse(of, _1.identity);
     }
     traverse(of, fn) {
         return this.isNothing ? of(this) : fn(this.$value).map(Maybe.of);

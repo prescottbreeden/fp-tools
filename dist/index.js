@@ -33,7 +33,7 @@ exports.curry = curry;
 const converge = (fn, wraps) => (arg) => fn(...wraps.map((wrap) => wrap(arg)));
 exports.converge = converge;
 // ============================================================
-//                      -- Monoids -- 
+//                      -- Monoids --
 // ============================================================
 /**
  *  identity :: x -> x
@@ -44,7 +44,7 @@ exports.identity = identity;
  *  map :: (a -> b) -> [a] -> [b]
  */
 exports.map = curry((fn, xs) => {
-    return (xs === null || xs === undefined || xs.map === undefined)
+    return xs === null || xs === undefined || xs.map === undefined
         ? xs
         : xs.map(fn);
 });
@@ -52,29 +52,29 @@ exports.map = curry((fn, xs) => {
  *  filter :: (a -> b) -> [a] -> b
  */
 exports.filter = curry((fn, xs) => {
-    return (xs === null || xs === undefined || xs.filter === undefined)
+    return xs === null || xs === undefined || xs.filter === undefined
         ? xs
         : xs.filter(fn);
 });
 // ============================================================
-//                      -- Not? Monoids -- 
+//                      -- Not? Monoids --
 // ============================================================
 /**
  *  map :: (a -> b) -> [a] -> b
  */
 exports.reduce = curry((fn, xs) => {
-    return (xs === null || xs === undefined || xs.reduce === undefined)
+    return xs === null || xs === undefined || xs.reduce === undefined
         ? xs
         : xs.reduce(fn);
 });
 // ============================================================
-//                      -- Reduce -- 
+//                      -- Reduce --
 // ============================================================
 /**
  *   some :: fn -> xs -> boolean
  */
 exports.some = curry((pred, list) => {
-    return (list === null || list === undefined || list.reduce === undefined)
+    return list === null || list === undefined || list.reduce === undefined
         ? false
         : list.reduce((prev, curr) => {
             return prev ? prev : pred(curr);
@@ -84,14 +84,14 @@ exports.some = curry((pred, list) => {
  *   all :: fn -> xs -> boolean
  */
 exports.all = curry((pred, list) => {
-    return (list === null || list === undefined || list.reduce === undefined)
+    return list === null || list === undefined || list.reduce === undefined
         ? false
         : list.reduce((prev, curr) => {
             return prev ? pred(curr) : prev;
         }, false);
 });
 // ============================================================
-//                      -- logic -- 
+//                      -- logic --
 // ============================================================
 /**
  *   isNil :: a -> boolean
@@ -120,7 +120,7 @@ exports.defaultTo = curry((def, val) => (val ? val : def));
 const doNothing = (_) => null;
 exports.doNothing = doNothing;
 // ============================================================
-//                      -- debug -- 
+//                      -- debug --
 // ============================================================
 /**
  *  trace :: string -> a -> a
@@ -130,7 +130,7 @@ exports.trace = curry((msg, a) => {
     return a;
 });
 // ============================================================
-//          -- strings / numbers / lists / objects -- 
+//          -- strings / numbers / lists / objects --
 // ============================================================
 /**
  *  randomString :: () -> string
@@ -229,7 +229,7 @@ function safeGet(entity) {
 }
 exports.safeGet = safeGet;
 // ============================================================
-//                      -- math -- 
+//                      -- math --
 // ============================================================
 /**
  *  add :: a -> b -> (a + b): number
@@ -256,7 +256,7 @@ exports.lt = curry((a, b) => b < a);
  */
 exports.lte = curry((a, b) => b <= a);
 // ============================================================
-//                  -- Functor Constructors -- 
+//                  -- Functor Constructors --
 // ============================================================
 // Maybes
 const maybe = (x) => Maybe_1.Maybe.of(x);

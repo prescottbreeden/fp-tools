@@ -18,6 +18,7 @@
   },
   "scripts": {
     "dev": "yarn tsc -w",
+    "test": "yarn jest",
     "coverage": "jest --coverage --watchAll",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\"",

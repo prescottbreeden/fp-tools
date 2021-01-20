@@ -1,6 +1,6 @@
-import { Maybe } from "./Maybe";
-import { Task } from "./Task";
-import { Func } from "./types";
+import { Maybe } from './Maybe';
+import { Task } from './Task';
+import { Func } from './types';
 /**
  *  compose :: ((a -> b), (b -> c),  ..., (y -> z)) -> a -> z
  */

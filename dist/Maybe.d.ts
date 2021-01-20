@@ -1,4 +1,4 @@
-import { Func } from "./types";
+import { Func } from './types';
 export declare class Maybe {
     $value: any;
     get isNothing(): boolean;

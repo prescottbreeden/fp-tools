@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Task = void 0;
-const src_1 = require("src");
+const _1 = require("./");
 // ============================================================
-//                      -- Task -- 
+//                      -- Task --
 // ============================================================
 class Task {
     constructor(fork) {
@@ -18,7 +18,7 @@ class Task {
     }
     // ----- Functor (Task a)
     map(fn) {
-        return new Task((reject, resolve) => this.fork(reject, src_1.compose(resolve, fn)));
+        return new Task((reject, resolve) => this.fork(reject, _1.compose(resolve, fn)));
     }
     // ----- Applicative (Task a)
     ap(f) {
@@ -29,7 +29,7 @@ class Task {
         return new Task((reject, resolve) => this.fork(reject, (x) => fn(x).fork(reject, resolve)));
     }
     join() {
-        return this.chain(src_1.identity);
+        return this.chain(_1.identity);
     }
 }
 exports.Task = Task;

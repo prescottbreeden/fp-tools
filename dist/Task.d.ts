@@ -1,4 +1,4 @@
-import { Func } from "./types";
+import { Func } from './types';
 export declare class Task {
     fork: any;
     constructor(fork: any);
