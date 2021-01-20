@@ -1,5 +1,7 @@
-# fp-utils
-smattering of fp utils I find myself looking for when I'm experimenting with ideas with several deviations from ramda that always irk me such as less strict typing on compose, such as gt and lt reversed cause why the hell would gt(1) mean x < 1 and not x > 1.
+# fp-tools
+Smattering of fp utilitiess intended for speeding up prototyping, not production. 
+Has several deviations from Ramda that always irk me. Notable deviations include 
+a less strict typing on compose and gt and lt reversed cause why the hell would gt(1) mean x < 1 and not x > 1. 
 
 ## Functions
 - compose 
@@ -40,6 +42,6 @@ smattering of fp utils I find myself looking for when I'm experimenting with ide
 - nothing 
 - reject 
 
-##Functors
+## Functors
 - Maybe 
 - Task 
