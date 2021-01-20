@@ -11,6 +11,7 @@ import {
   equals,
   either,
   defaultTo,
+  filter,
 } from '../';
 
 describe('general', () => {
@@ -37,12 +38,6 @@ describe('general', () => {
     });
   });
 
-  describe('identity', () => {
-    it('returns its argument', () => {
-      expect(identity(42)).toBe(42);
-    });
-  });
-
   describe('converge', () => {
     it('applies the output of funcs as input to another', () => {
       const person = {
@@ -51,6 +46,12 @@ describe('general', () => {
       };
       const fullName = converge(concat, [prop('firstName'), prop('lastName')]);
       expect(fullName(person)).toBe('BobRoss');
+    });
+  });
+
+  describe('identity', () => {
+    it('returns its argument', () => {
+      expect(identity(42)).toBe(42);
     });
   });
 
@@ -64,6 +65,17 @@ describe('general', () => {
       const add2 = add(2);
       const nums = null;
       expect(map(add2, nums)).toBe(null);
+    });
+  });
+
+  describe('filter', () => {
+    it('filters list based on predicate', () => {
+      const nums = [1, 2, 3, 4, 5];
+      expect(filter(equals(2), nums)).toStrictEqual([2]);
+    });
+    it('returns xs if xs is not filterable', () => {
+      const nums = null;
+      expect(filter(equals(2), nums)).toStrictEqual(null);
     });
   });
 

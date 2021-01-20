@@ -1,4 +1,4 @@
-import { identity } from 'src';
+import { identity } from './';
 import { Func } from './types';
 
 // ============================================================
