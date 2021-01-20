@@ -1,8 +1,8 @@
-import {identity} from "src";
-import {Func} from "./types";
+import { identity } from 'src';
+import { Func } from './types';
 
 // ============================================================
-//                      -- Maybe -- 
+//                      -- Maybe --
 // ============================================================
 export class Maybe {
   $value: any;
@@ -52,4 +52,3 @@ export class Maybe {
     return this.isNothing ? of(this) : fn(this.$value).map(Maybe.of);
   }
 }
-

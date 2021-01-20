@@ -10,23 +10,22 @@ import {
   map,
   equals,
   either,
-  defaultTo
-} from "../";
+  defaultTo,
+} from '../';
 
 describe('general', () => {
   describe('curry', () => {
     it('allows arguments to be partially applied', () => {
       const greet = (g1: string, g2: string) => {
         return `${g1}-${g2}`;
-      }
+      };
       const curriedGreet = curry(greet);
-      expect(typeof curriedGreet).toBe('function')
+      expect(typeof curriedGreet).toBe('function');
       const sayHello = curriedGreet('Hello');
-      expect(typeof sayHello).toBe('function')
+      expect(typeof sayHello).toBe('function');
       const result = sayHello('Bob');
       expect(result).toBe('Hello-Bob');
     });
-
   });
 
   describe('compose', () => {
@@ -44,17 +43,13 @@ describe('general', () => {
     });
   });
 
-
   describe('converge', () => {
     it('applies the output of funcs as input to another', () => {
       const person = {
         firstName: 'Bob',
-        lastName: 'Ross'
-      }
-      const fullName = converge(concat, [
-        prop('firstName'),
-        prop('lastName'),
-      ])
+        lastName: 'Ross',
+      };
+      const fullName = converge(concat, [prop('firstName'), prop('lastName')]);
       expect(fullName(person)).toBe('BobRoss');
     });
   });
@@ -90,16 +85,13 @@ describe('general', () => {
 
   describe('either', () => {
     it('returns first function if arg is not null or undefined.', () => {
-      const dog = "jake";
+      const dog = 'jake';
       expect(either(identity, () => 'no name', dog)).toBe('jake');
       const person = {
         firstName: 'Bob',
-        lastName: 'Ross'
+        lastName: 'Ross',
       };
-      const firstOrNull = either(
-        prop('firstName'),
-        () => 'bobby',
-      );
+      const firstOrNull = either(prop('firstName'), () => 'bobby');
       expect(firstOrNull(person)).toBe('Bob');
     });
 
@@ -107,10 +99,7 @@ describe('general', () => {
       const dog = null;
       expect(either(identity, () => 'no name', dog)).toBe('no name');
       const person = undefined;
-      const firstOrNull = either(
-        prop('firstName'),
-        (_: any) => null,
-      );
+      const firstOrNull = either(prop('firstName'), (_: any) => null);
       expect(firstOrNull(person)).toBe(null);
     });
   });
@@ -121,5 +110,4 @@ describe('general', () => {
       expect(defaultTo('dog', null)).toBe('dog');
     });
   });
-
 });

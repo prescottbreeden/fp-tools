@@ -1,6 +1,6 @@
-import {Maybe} from "./Maybe";
-import {Task} from "./Task";
-import {Filterable, Func, Mappable, Reducable, ReduceFunction} from "./types";
+import { Maybe } from './Maybe';
+import { Task } from './Task';
+import { Filterable, Func, Mappable, Reducable, ReduceFunction } from './types';
 
 /**
  *  compose :: ((a -> b), (b -> c),  ..., (y -> z)) -> a -> z
@@ -35,9 +35,8 @@ export function curry(fn: (...args: any) => any) {
 export const converge = (fn: Func, wraps: Func[]) => (arg: any) =>
   fn(...wraps.map((wrap: Func) => wrap(arg)));
 
-
 // ============================================================
-//                      -- Monoids -- 
+//                      -- Monoids --
 // ============================================================
 
 /**
@@ -48,7 +47,7 @@ export const identity = (x: any) => x;
  *  map :: (a -> b) -> [a] -> [b]
  */
 export const map = curry((fn: any, xs: Mappable) => {
-  return (xs === null || xs === undefined || xs.map === undefined)
+  return xs === null || xs === undefined || xs.map === undefined
     ? xs
     : xs.map(fn);
 });
@@ -57,51 +56,50 @@ export const map = curry((fn: any, xs: Mappable) => {
  *  filter :: (a -> b) -> [a] -> b
  */
 export const filter = curry((fn: (x: any) => boolean, xs: Filterable) => {
-  return (xs === null || xs === undefined || xs.filter === undefined)
+  return xs === null || xs === undefined || xs.filter === undefined
     ? xs
     : xs.filter(fn);
 });
 
 // ============================================================
-//                      -- Not? Monoids -- 
+//                      -- Not? Monoids --
 // ============================================================
 /**
  *  map :: (a -> b) -> [a] -> b
  */
 export const reduce = curry((fn: ReduceFunction, xs: Reducable) => {
-  return (xs === null || xs === undefined || xs.reduce === undefined)
+  return xs === null || xs === undefined || xs.reduce === undefined
     ? xs
     : xs.reduce(fn);
 });
 
 // ============================================================
-//                      -- Reduce -- 
+//                      -- Reduce --
 // ============================================================
 /**
  *   some :: fn -> xs -> boolean
  */
 export const some = curry((pred: (x: any) => boolean, list: any[]) => {
-  return (list === null || list === undefined || list.reduce === undefined) 
+  return list === null || list === undefined || list.reduce === undefined
     ? false
     : list.reduce((prev: any, curr: any) => {
-      return prev ? prev : pred(curr);
-    }, false);
+        return prev ? prev : pred(curr);
+      }, false);
 });
 
 /**
  *   all :: fn -> xs -> boolean
  */
 export const all = curry((pred: (x: any) => boolean, list: any[]) => {
-  return (list === null || list === undefined || list.reduce === undefined)
+  return list === null || list === undefined || list.reduce === undefined
     ? false
     : list.reduce((prev: any, curr: any) => {
-      return prev ? pred(curr) : prev;
-    }, false);
+        return prev ? pred(curr) : prev;
+      }, false);
 });
 
-
 // ============================================================
-//                      -- logic -- 
+//                      -- logic --
 // ============================================================
 /**
  *   isNil :: a -> boolean
@@ -114,7 +112,6 @@ export const isNil = (x: any) => x === null || x === undefined;
 export const equals = curry((a: any, b: any) => {
   return JSON.stringify(a) === JSON.stringify(b);
 });
-
 
 /**
  *  either :: f -> g -> x -> f(x) | g(x)
@@ -134,7 +131,7 @@ export const defaultTo = curry((def: any, val: any) => (val ? val : def));
 export const doNothing = (_: any) => null;
 
 // ============================================================
-//                      -- debug -- 
+//                      -- debug --
 // ============================================================
 /**
  *  trace :: string -> a -> a
@@ -144,9 +141,8 @@ export const trace = curry((msg: string, a: any) => {
   return a;
 });
 
-
 // ============================================================
-//          -- strings / numbers / lists / objects -- 
+//          -- strings / numbers / lists / objects --
 // ============================================================
 
 /**
@@ -226,13 +222,14 @@ export const tail = (xs: any[] | string) => {
     }
     return null;
   }
-}
-
+};
 
 /**
  *  prop :: String -> Object -> a
  */
-export const prop = curry((p: string, obj: any) => isNil(obj) ? null : obj[p]);
+export const prop = curry((p: string, obj: any) =>
+  isNil(obj) ? null : obj[p],
+);
 
 /**
  *  objProp :: Object -> String -> a
@@ -251,7 +248,7 @@ export function safeGet<T>(entity: T) {
 }
 
 // ============================================================
-//                      -- math -- 
+//                      -- math --
 // ============================================================
 /**
  *  add :: a -> b -> (a + b): number
@@ -282,7 +279,7 @@ export const lt = curry((a: number, b: number) => b < a);
 export const lte = curry((a: number, b: number) => b <= a);
 
 // ============================================================
-//                  -- Functor Constructors -- 
+//                  -- Functor Constructors --
 // ============================================================
 // Maybes
 export const maybe = (x: any) => Maybe.of(x);
@@ -291,4 +288,3 @@ export const nothing = maybe(null);
 
 // Tasks
 export const reject = (x: any) => Task.rejected(x);
-

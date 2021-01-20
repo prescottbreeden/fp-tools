@@ -1,8 +1,8 @@
-import {compose, identity} from "src";
-import {Func} from "./types";
+import { compose, identity } from 'src';
+import { Func } from './types';
 
 // ============================================================
-//                      -- Task -- 
+//                      -- Task --
 // ============================================================
 export class Task {
   fork: any;
@@ -19,7 +19,8 @@ export class Task {
   // ----- Functor (Task a)
   map(fn: Func) {
     return new Task((reject: Func, resolve: Func) =>
-      this.fork(reject, compose(resolve, fn)));
+      this.fork(reject, compose(resolve, fn)),
+    );
   }
   // ----- Applicative (Task a)
   ap(f: any) {
@@ -28,10 +29,10 @@ export class Task {
   // ----- Monad (Task a)
   chain(fn: any) {
     return new Task((reject: Func, resolve: Func) =>
-      this.fork(reject, (x: any) => fn(x).fork(reject, resolve)));
+      this.fork(reject, (x: any) => fn(x).fork(reject, resolve)),
+    );
   }
   join() {
     return this.chain(identity);
   }
 }
-
