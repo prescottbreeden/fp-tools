@@ -1,4 +1,6 @@
-import {Filterable, Mappable, Reducable, ReduceFunction} from "./types";
+import {Maybe} from "./Maybe";
+import {Task} from "./Task";
+import {Filterable, Func, Mappable, Reducable, ReduceFunction} from "./types";
 
 /**
  *  compose :: ((a -> b), (b -> c),  ..., (y -> z)) -> a -> z
@@ -9,7 +11,7 @@ export const compose = (...fns: any) => (...args: any) =>
 /**
  *  curry :: ((a, b, ...) -> c) -> a -> b -> ... -> c
  */
-export function curry(fn: Function) {
+export function curry(fn: (...args: any) => any) {
   const arity = fn.length;
 
   return function $curry(...args: any): any {
@@ -30,8 +32,8 @@ export function curry(fn: Function) {
  * @param wraps array of functions to supply as arguments to fn
  * @returns (fn, ...wraps) -> arg -> fn(...wraps(arg))
  */
-export const converge = (fn: Function, wraps: Function[]) => (arg: any) =>
-  fn(...wraps.map((wrap: Function) => wrap(arg)));
+export const converge = (fn: Func, wraps: Func[]) => (arg: any) =>
+  fn(...wraps.map((wrap: Func) => wrap(arg)));
 
 
 // ============================================================
@@ -46,7 +48,7 @@ export const identity = (x: any) => x;
  *  map :: (a -> b) -> [a] -> [b]
  */
 export const map = curry((fn: any, xs: Mappable) => {
-  return (xs === null || xs === undefined || xs['map'] === undefined)
+  return (xs === null || xs === undefined || xs.map === undefined)
     ? xs
     : xs.map(fn);
 });
@@ -55,13 +57,9 @@ export const map = curry((fn: any, xs: Mappable) => {
  *  filter :: (a -> b) -> [a] -> b
  */
 export const filter = curry((fn: (x: any) => boolean, xs: Filterable) => {
-  if (xs === null || xs === undefined || xs['filter'] === undefined) {
-    return xs;
-  }
-  if (Array.isArray(xs) || xs['filter'] !== undefined) {
-    return xs.filter(fn);
-  }
-  return xs;
+  return (xs === null || xs === undefined || xs.filter === undefined)
+    ? xs
+    : xs.filter(fn);
 });
 
 // ============================================================
@@ -71,13 +69,9 @@ export const filter = curry((fn: (x: any) => boolean, xs: Filterable) => {
  *  map :: (a -> b) -> [a] -> b
  */
 export const reduce = curry((fn: ReduceFunction, xs: Reducable) => {
-  if (xs === null || xs === undefined || xs['reduce'] === undefined) {
-    return xs;
-  }
-  if (Array.isArray(xs) || xs['reduce'] !== undefined) {
-    return xs.reduce(fn);
-  }
-  return xs;
+  return (xs === null || xs === undefined || xs.reduce === undefined)
+    ? xs
+    : xs.reduce(fn);
 });
 
 // ============================================================
@@ -87,32 +81,23 @@ export const reduce = curry((fn: ReduceFunction, xs: Reducable) => {
  *   some :: fn -> xs -> boolean
  */
 export const some = curry((pred: (x: any) => boolean, list: any[]) => {
-  if (list === null || list === undefined || list['reduce'] === undefined) {
-    return false;
-  }
-  if (Array.isArray(list) || list['reduce'] !== undefined) {
-    return list.reduce((prev: any, curr: any) => {
+  return (list === null || list === undefined || list.reduce === undefined) 
+    ? false
+    : list.reduce((prev: any, curr: any) => {
       return prev ? prev : pred(curr);
     }, false);
-  }
-  return false;
 });
 
 /**
  *   all :: fn -> xs -> boolean
  */
 export const all = curry((pred: (x: any) => boolean, list: any[]) => {
-  if (list === null || list === undefined || list['reduce'] === undefined) {
-    return false;
-  }
-  if (Array.isArray(list) || list['reduce'] !== undefined) {
-    return list.reduce((prev: any, curr: any) => {
+  return (list === null || list === undefined || list.reduce === undefined)
+    ? false
+    : list.reduce((prev: any, curr: any) => {
       return prev ? pred(curr) : prev;
     }, false);
-  }
-  return false;
 });
-
 
 
 // ============================================================
@@ -134,7 +119,7 @@ export const equals = curry((a: any, b: any) => {
 /**
  *  either :: f -> g -> x -> f(x) | g(x)
  */
-export const either = curry((pred1: Function, pred2: Function, val: any) => {
+export const either = curry((pred1: Func, pred2: Func, val: any) => {
   return isNil(val) ? pred2(val) : pred1(val);
 });
 
@@ -191,8 +176,14 @@ export const includes = curry((a: string, b: string) => {
   return false;
 });
 
+/**
+ *  split :: string -> string -> [ string ]
+ */
 export const split = curry((sep: string, str: string) => str.split(sep));
 
+/**
+ *  split :: number -> xs | string -> [ xs | [string], xs | [string] ]
+ */
 export const splitAt = curry((index: number, xs: any[] | string) => {
   const p1 = xs.slice(0, index);
   const p2 = xs.slice(index);
@@ -254,7 +245,7 @@ export const objProp = curry((obj: any, property: string) => {
  *  safeGet :: obj -> string -> a | undefined
  */
 export function safeGet<T>(entity: T) {
-  return function (property: keyof T) {
+  return (property: keyof T) => {
     return prop(property as string, entity);
   };
 }
@@ -289,92 +280,6 @@ export const lt = curry((a: number, b: number) => b < a);
  *  lte :: a -> b -> (b <= a): boolean
  */
 export const lte = curry((a: number, b: number) => b <= a);
-
-// ============================================================
-//                      -- Maybe -- 
-// ============================================================
-export class Maybe {
-  $value: any;
-
-  get isNothing() {
-    return this.$value === null || this.$value === undefined;
-  }
-
-  get isJust() {
-    return !this.isNothing;
-  }
-
-  constructor(x: any) {
-    this.$value = x;
-  }
-
-  // ----- Pointed Maybe
-  static of(x: any) {
-    return new Maybe(x);
-  }
-
-  // ----- Functor Maybe
-  map(fn: Function) {
-    return this.isNothing ? this : Maybe.of(fn(this.$value));
-  }
-
-  // ----- Applicative Maybe
-  ap(f: any) {
-    return this.isNothing ? this : f.map(this.$value);
-  }
-
-  // ----- Monad Maybe
-  chain(fn: Function) {
-    return this.map(fn).join();
-  }
-
-  join() {
-    return this.isNothing ? this : this.$value;
-  }
-
-  // ----- Traversable Maybe
-  sequence(of: any) {
-    return this.traverse(of, identity);
-  }
-
-  traverse(of: any, fn: Function) {
-    return this.isNothing ? of(this) : fn(this.$value).map(Maybe.of);
-  }
-}
-
-// ============================================================
-//                      -- Task -- 
-// ============================================================
-export class Task {
-  fork: any;
-  constructor(fork: any) {
-    this.fork = fork;
-  }
-  static rejected(x: any) {
-    return new Task((reject: Function, _: any) => reject(x));
-  }
-  // ----- Pointed (Task a)
-  static of(x: any) {
-    return new Task((_: any, resolve: Function) => resolve(x));
-  }
-  // ----- Functor (Task a)
-  map(fn: Function) {
-    return new Task((reject: Function, resolve: Function) =>
-      this.fork(reject, compose(resolve, fn)));
-  }
-  // ----- Applicative (Task a)
-  ap(f: any) {
-    return this.chain((fn: any) => f.map(fn));
-  }
-  // ----- Monad (Task a)
-  chain(fn: any) {
-    return new Task((reject: Function, resolve: Function) =>
-      this.fork(reject, (x: any) => fn(x).fork(reject, resolve)));
-  }
-  join() {
-    return this.chain(identity);
-  }
-}
 
 // ============================================================
 //                  -- Functor Constructors -- 

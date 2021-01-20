@@ -1,14 +1,14 @@
+import { Func } from "./types";
 export declare class Maybe {
     $value: any;
     get isNothing(): boolean;
     get isJust(): boolean;
     constructor(x: any);
     static of(x: any): Maybe;
-    map(fn: Function): Maybe;
+    map(fn: Func): Maybe;
     ap(f: any): any;
-    chain(fn: Function): any;
+    chain(fn: Func): any;
     join(): any;
     sequence(of: any): any;
-    traverse(of: any, fn: Function): any;
+    traverse(of: any, fn: Func): any;
 }
-//# sourceMappingURL=Maybe.d.ts.map

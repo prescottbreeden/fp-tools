@@ -1,11 +1,12 @@
+export type Func = (...args: any) => any;
 export interface Mappable {
-  map: Function;
+  map: Func;
 }
 
 export interface Reducable {
-  reduce: Function;
+  reduce: Func;
 }
 export type ReduceFunction = (prev: any, curr: any) => any;
 export interface Filterable {
-  filter: Function;
+  filter: Func;
 }

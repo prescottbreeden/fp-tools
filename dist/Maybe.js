@@ -1,51 +1,46 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Maybe = void 0;
-var general_1 = require("./general");
-var Maybe = /** @class */ (function () {
-    function Maybe(x) {
+const src_1 = require("src");
+// ============================================================
+//                      -- Maybe -- 
+// ============================================================
+class Maybe {
+    constructor(x) {
         this.$value = x;
     }
-    Object.defineProperty(Maybe.prototype, "isNothing", {
-        get: function () {
-            return this.$value === null || this.$value === undefined;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Maybe.prototype, "isJust", {
-        get: function () {
-            return !this.isNothing;
-        },
-        enumerable: false,
-        configurable: true
-    });
+    get isNothing() {
+        return this.$value === null || this.$value === undefined;
+    }
+    get isJust() {
+        return !this.isNothing;
+    }
     // ----- Pointed Maybe
-    Maybe.of = function (x) {
+    static of(x) {
         return new Maybe(x);
-    };
+    }
     // ----- Functor Maybe
-    Maybe.prototype.map = function (fn) {
+    map(fn) {
         return this.isNothing ? this : Maybe.of(fn(this.$value));
-    };
+    }
     // ----- Applicative Maybe
-    Maybe.prototype.ap = function (f) {
+    ap(f) {
         return this.isNothing ? this : f.map(this.$value);
-    };
+    }
     // ----- Monad Maybe
-    Maybe.prototype.chain = function (fn) {
+    chain(fn) {
         return this.map(fn).join();
-    };
-    Maybe.prototype.join = function () {
+    }
+    join() {
         return this.isNothing ? this : this.$value;
-    };
+    }
     // ----- Traversable Maybe
-    Maybe.prototype.sequence = function (of) {
-        return this.traverse(of, general_1.identity);
-    };
-    Maybe.prototype.traverse = function (of, fn) {
+    sequence(of) {
+        return this.traverse(of, src_1.identity);
+    }
+    traverse(of, fn) {
         return this.isNothing ? of(this) : fn(this.$value).map(Maybe.of);
-    };
-    return Maybe;
-}());
+    }
+}
 exports.Maybe = Maybe;
+//# sourceMappingURL=Maybe.js.map

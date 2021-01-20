@@ -1,39 +1,36 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Task = void 0;
-var general_1 = require("./general");
-var Task = /** @class */ (function () {
-    function Task(fork) {
+const src_1 = require("src");
+// ============================================================
+//                      -- Task -- 
+// ============================================================
+class Task {
+    constructor(fork) {
         this.fork = fork;
     }
-    Task.rejected = function (x) {
-        return new Task(function (reject, _) { return reject(x); });
-    };
+    static rejected(x) {
+        return new Task((reject, _) => reject(x));
+    }
     // ----- Pointed (Task a)
-    Task.of = function (x) {
-        return new Task(function (_, resolve) { return resolve(x); });
-    };
+    static of(x) {
+        return new Task((_, resolve) => resolve(x));
+    }
     // ----- Functor (Task a)
-    Task.prototype.map = function (fn) {
-        var _this = this;
-        return new Task(function (reject, resolve) {
-            return _this.fork(reject, general_1.compose(resolve, fn));
-        });
-    };
+    map(fn) {
+        return new Task((reject, resolve) => this.fork(reject, src_1.compose(resolve, fn)));
+    }
     // ----- Applicative (Task a)
-    Task.prototype.ap = function (f) {
-        return this.chain(function (fn) { return f.map(fn); });
-    };
+    ap(f) {
+        return this.chain((fn) => f.map(fn));
+    }
     // ----- Monad (Task a)
-    Task.prototype.chain = function (fn) {
-        var _this = this;
-        return new Task(function (reject, resolve) {
-            return _this.fork(reject, function (x) { return fn(x).fork(reject, resolve); });
-        });
-    };
-    Task.prototype.join = function () {
-        return this.chain(general_1.identity);
-    };
-    return Task;
-}());
+    chain(fn) {
+        return new Task((reject, resolve) => this.fork(reject, (x) => fn(x).fork(reject, resolve)));
+    }
+    join() {
+        return this.chain(src_1.identity);
+    }
+}
 exports.Task = Task;
+//# sourceMappingURL=Task.js.map
