@@ -1,8 +1,4 @@
-import { Maybe } from './Maybe';
-import { Task } from './Task';
 import { Func } from './types';
-export * from './Task';
-export * from './Maybe';
 export * from './types';
 /**
  *  compose :: ((a -> b), (b -> c),  ..., (y -> z)) -> a -> z
@@ -139,7 +135,30 @@ export declare const lt: (...args: any) => any;
  *  lte :: a -> b -> (b <= a): boolean
  */
 export declare const lte: (...args: any) => any;
+export declare class Maybe {
+    $value: any;
+    get isNothing(): boolean;
+    get isJust(): boolean;
+    constructor(x: any);
+    static of(x: any): Maybe;
+    map(fn: Func): Maybe;
+    ap(f: any): any;
+    chain(fn: Func): any;
+    join(): any;
+    sequence(of: any): any;
+    traverse(of: any, fn: Func): any;
+}
 export declare const maybe: (x: any) => Maybe;
 export declare const just: (x: any) => Maybe;
 export declare const nothing: Maybe;
+export declare class Task {
+    fork: any;
+    constructor(fork: any);
+    static rejected(x: any): Task;
+    static of(x: any): Task;
+    map(fn: Func): Task;
+    ap(f: any): Task;
+    chain(fn: any): Task;
+    join(): Task;
+}
 export declare const reject: (x: any) => Task;

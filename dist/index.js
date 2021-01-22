@@ -10,11 +10,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reject = exports.nothing = exports.just = exports.maybe = exports.lte = exports.lt = exports.gte = exports.gt = exports.subtract = exports.add = exports.safeGet = exports.objProp = exports.prop = exports.tail = exports.head = exports.concat = exports.splitAt = exports.split = exports.includes = exports.toUpper = exports.toLower = exports.randomString = exports.trace = exports.doNothing = exports.defaultTo = exports.either = exports.equals = exports.isNil = exports.all = exports.some = exports.reduce = exports.filter = exports.map = exports.identity = exports.converge = exports.curry = exports.compose = void 0;
-const Maybe_1 = require("./Maybe");
-const Task_1 = require("./Task");
-__exportStar(require("./Task"), exports);
-__exportStar(require("./Maybe"), exports);
+exports.reject = exports.Task = exports.nothing = exports.just = exports.maybe = exports.Maybe = exports.lte = exports.lt = exports.gte = exports.gt = exports.subtract = exports.add = exports.safeGet = exports.objProp = exports.prop = exports.tail = exports.head = exports.concat = exports.splitAt = exports.split = exports.includes = exports.toUpper = exports.toLower = exports.randomString = exports.trace = exports.doNothing = exports.defaultTo = exports.either = exports.equals = exports.isNil = exports.all = exports.some = exports.reduce = exports.filter = exports.map = exports.identity = exports.converge = exports.curry = exports.compose = void 0;
 __exportStar(require("./types"), exports);
 /**
  *  compose :: ((a -> b), (b -> c),  ..., (y -> z)) -> a -> z
@@ -272,12 +268,84 @@ exports.lte = curry((a, b) => b <= a);
 //                  -- Functor Constructors --
 // ============================================================
 // Maybes
-const maybe = (x) => Maybe_1.Maybe.of(x);
+// ============================================================
+//                      -- Maybe --
+// ============================================================
+class Maybe {
+    constructor(x) {
+        this.$value = x;
+    }
+    get isNothing() {
+        return this.$value === null || this.$value === undefined;
+    }
+    get isJust() {
+        return !this.isNothing;
+    }
+    // ----- Pointed Maybe
+    static of(x) {
+        return new Maybe(x);
+    }
+    // ----- Functor Maybe
+    map(fn) {
+        return this.isNothing ? this : Maybe.of(fn(this.$value));
+    }
+    // ----- Applicative Maybe
+    ap(f) {
+        return this.isNothing ? this : f.map(this.$value);
+    }
+    // ----- Monad Maybe
+    chain(fn) {
+        return this.map(fn).join();
+    }
+    join() {
+        return this.isNothing ? this : this.$value;
+    }
+    // ----- Traversable Maybe
+    sequence(of) {
+        return this.traverse(of, exports.identity);
+    }
+    traverse(of, fn) {
+        return this.isNothing ? of(this) : fn(this.$value).map(Maybe.of);
+    }
+}
+exports.Maybe = Maybe;
+const maybe = (x) => Maybe.of(x);
 exports.maybe = maybe;
 const just = (x) => exports.maybe(x);
 exports.just = just;
 exports.nothing = exports.maybe(null);
 // Tasks
-const reject = (x) => Task_1.Task.rejected(x);
+// ============================================================
+//                      -- Task --
+// ============================================================
+class Task {
+    constructor(fork) {
+        this.fork = fork;
+    }
+    static rejected(x) {
+        return new Task((rej, _) => rej(x));
+    }
+    // ----- Pointed (Task a)
+    static of(x) {
+        return new Task((_, resolve) => resolve(x));
+    }
+    // ----- Functor (Task a)
+    map(fn) {
+        return new Task((rej, resolve) => this.fork(rej, exports.compose(resolve, fn)));
+    }
+    // ----- Applicative (Task a)
+    ap(f) {
+        return this.chain((fn) => f.map(fn));
+    }
+    // ----- Monad (Task a)
+    chain(fn) {
+        return new Task((rej, resolve) => this.fork(exports.reject, (x) => fn(x).fork(rej, resolve)));
+    }
+    join() {
+        return this.chain(exports.identity);
+    }
+}
+exports.Task = Task;
+const reject = (x) => Task.rejected(x);
 exports.reject = reject;
 //# sourceMappingURL=index.js.map
