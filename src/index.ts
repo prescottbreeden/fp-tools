@@ -1,9 +1,5 @@
-import { Maybe } from './Maybe';
-import { Task } from './Task';
 import { Filterable, Func, Mappable, Reducable, ReduceFunction } from './types';
 
-export * from './Task'
-export * from './Maybe'
 export * from './types'
 
 /**
@@ -286,9 +282,101 @@ export const lte = curry((a: number, b: number) => b <= a);
 //                  -- Functor Constructors --
 // ============================================================
 // Maybes
+// ============================================================
+//                      -- Maybe --
+// ============================================================
+export class Maybe {
+  $value: any;
+
+  get isNothing() {
+    return this.$value === null || this.$value === undefined;
+  }
+
+  get isJust() {
+    return !this.isNothing;
+  }
+
+  constructor(x: any) {
+    this.$value = x;
+  }
+
+  // ----- Pointed Maybe
+  static of(x: any) {
+    return new Maybe(x);
+  }
+
+  // ----- Functor Maybe
+  map(fn: Func) {
+    return this.isNothing ? this : Maybe.of(fn(this.$value));
+  }
+
+  // ----- Applicative Maybe
+  ap(f: any) {
+    return this.isNothing ? this : f.map(this.$value);
+  }
+
+  // ----- Monad Maybe
+  chain(fn: Func) {
+    return this.map(fn).join();
+  }
+
+  join() {
+    return this.isNothing ? this : this.$value;
+  }
+
+  // ----- Traversable Maybe
+  sequence(of: any) {
+    return this.traverse(of, identity);
+  }
+
+  traverse(of: any, fn: Func) {
+    return this.isNothing ? of(this) : fn(this.$value).map(Maybe.of);
+  }
+}
 export const maybe = (x: any) => Maybe.of(x);
 export const just = (x: any) => maybe(x);
 export const nothing = maybe(null);
 
 // Tasks
+// ============================================================
+//                      -- Task --
+// ============================================================
+export class Task {
+  fork: any;
+  constructor(fork: any) {
+    this.fork = fork;
+  }
+
+  static rejected(x: any) {
+    return new Task((rej: Func, _: any) => rej(x));
+  }
+
+  // ----- Pointed (Task a)
+  static of(x: any) {
+    return new Task((_: any, resolve: Func) => resolve(x));
+  }
+
+  // ----- Functor (Task a)
+  map(fn: Func) {
+    return new Task((rej: Func, resolve: Func) =>
+      this.fork(rej, compose(resolve, fn)),
+    );
+  }
+
+  // ----- Applicative (Task a)
+  ap(f: any) {
+    return this.chain((fn: any) => f.map(fn));
+  }
+
+  // ----- Monad (Task a)
+  chain(fn: any) {
+    return new Task((rej: Func, resolve: Func) =>
+      this.fork(reject, (x: any) => fn(x).fork(rej, resolve)),
+    );
+  }
+
+  join() {
+    return this.chain(identity);
+  }
+}
 export const reject = (x: any) => Task.rejected(x);
