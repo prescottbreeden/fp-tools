@@ -1,6 +1,9 @@
 import { Maybe } from './Maybe';
 import { Task } from './Task';
 import { Func } from './types';
+export * from './Task';
+export * from './Maybe';
+export * from './types';
 /**
  *  compose :: ((a -> b), (b -> c),  ..., (y -> z)) -> a -> z
  */
