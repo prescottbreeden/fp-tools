@@ -1,4 +1,4 @@
-import { Func } from './types';
+import { Func } from ".";
 export declare class Task {
     fork: any;
     constructor(fork: any);
@@ -9,3 +9,4 @@ export declare class Task {
     chain(fn: any): Task;
     join(): Task;
 }
+export declare const reject: (x: any) => Task;
