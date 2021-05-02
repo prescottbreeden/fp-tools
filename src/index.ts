@@ -2,7 +2,6 @@ import { Maybe } from './Maybe';
 import { Filterable, Func, Mappable, Reducable, ReduceFunction } from './types';
 
 export * from './types';
-export * from './utils';
 export * from './Maybe';
 export * from './Task';
 

@@ -1,6 +1,6 @@
 {
   "name": "fp-tools",
-  "version": "1.0.7",
+  "version": "2.0.0",
   "description": "javascript functional programming utilities",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",

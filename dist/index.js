@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.isNothing = exports.isSome = exports.nothing = exports.maybe = exports.lte = exports.lt = exports.gte = exports.gt = exports.divideBy = exports.divide = exports.multiply = exports.subtract = exports.add = exports.safeGet = exports.objProp = exports.prop = exports.tail = exports.head = exports.concat = exports.splitAt = exports.split = exports.includes = exports.toUpper = exports.toLower = exports.randomString = exports.trace = exports.doNothing = exports.defaultTo = exports.either = exports.equals = exports.isNil = exports.all = exports.some = exports.reduce = exports.filter = exports.map = exports.identity = exports.converge = exports.curry = exports.pipe = exports.compose = void 0;
 const Maybe_1 = require("./Maybe");
 __exportStar(require("./types"), exports);
-__exportStar(require("./utils"), exports);
 __exportStar(require("./Maybe"), exports);
 __exportStar(require("./Task"), exports);
 __exportStar(require("./types"), exports);
