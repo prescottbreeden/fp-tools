@@ -5,6 +5,10 @@ export * from './types';
  */
 export declare const compose: (...fns: any) => (...args: any) => any;
 /**
+ *  pipe :: ((a -> b), (b -> c),  ..., (y -> z)) -> z -> a
+ */
+export declare const pipe: (...fns: any) => (...args: any) => any;
+/**
  *  curry :: ((a, b, ...) -> c) -> a -> b -> ... -> c
  */
 export declare function curry(fn: (...args: any) => any): (...args: any) => any;
@@ -27,11 +31,11 @@ export declare const identity: (x: any) => any;
  */
 export declare const map: (...args: any) => any;
 /**
- *  filter :: (a -> b) -> [a] -> b
+ *  filter :: (a -> a) -> [a] -> [a]
  */
 export declare const filter: (...args: any) => any;
 /**
- *  map :: (a -> b) -> [a] -> b
+ *  reduce :: (a -> b) -> [a] -> b
  */
 export declare const reduce: (...args: any) => any;
 /**
@@ -112,27 +116,39 @@ export declare const prop: (...args: any) => any;
 export declare const objProp: (...args: any) => any;
 export declare function safeGet<T>(entity: T): (property: keyof T) => any;
 /**
- *  add :: a -> b -> (a + b): number
+ *  add :: a -> b -> a + b
  */
 export declare const add: (...args: any) => any;
 /**
- *  subtract :: a -> b -> (a - b): number
+ *  subtract :: a -> b -> a - b
  */
 export declare const subtract: (...args: any) => any;
 /**
- *  gt :: a -> b -> (b > a): boolean
+ *  multiply :: a -> b -> a * b
+ */
+export declare const multiply: (...args: any) => any;
+/**
+ *  divide :: a -> b -> maybe(a / b)
+ */
+export declare const divide: (...args: any) => any;
+/**
+ *  divideBy :: a -> b -> maybe(b / a)
+ */
+export declare const divideBy: (...args: any) => any;
+/**
+ *  gt :: a -> b -> b > a
  */
 export declare const gt: (...args: any) => any;
 /**
- *  gte :: a -> b -> (b >= a): boolean
+ *  gte :: a -> b -> b >= a
  */
 export declare const gte: (...args: any) => any;
 /**
- *  lt :: a -> b -> (b < a): boolean
+ *  lt :: a -> b -> b < a
  */
 export declare const lt: (...args: any) => any;
 /**
- *  lte :: a -> b -> (b <= a): boolean
+ *  lte :: a -> b -> b <= a
  */
 export declare const lte: (...args: any) => any;
 export declare class Maybe {

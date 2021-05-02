@@ -10,13 +10,18 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reject = exports.Task = exports.nothing = exports.just = exports.maybe = exports.Maybe = exports.lte = exports.lt = exports.gte = exports.gt = exports.subtract = exports.add = exports.safeGet = exports.objProp = exports.prop = exports.tail = exports.head = exports.concat = exports.splitAt = exports.split = exports.includes = exports.toUpper = exports.toLower = exports.randomString = exports.trace = exports.doNothing = exports.defaultTo = exports.either = exports.equals = exports.isNil = exports.all = exports.some = exports.reduce = exports.filter = exports.map = exports.identity = exports.converge = exports.curry = exports.compose = void 0;
+exports.reject = exports.Task = exports.nothing = exports.just = exports.maybe = exports.Maybe = exports.lte = exports.lt = exports.gte = exports.gt = exports.divideBy = exports.divide = exports.multiply = exports.subtract = exports.add = exports.safeGet = exports.objProp = exports.prop = exports.tail = exports.head = exports.concat = exports.splitAt = exports.split = exports.includes = exports.toUpper = exports.toLower = exports.randomString = exports.trace = exports.doNothing = exports.defaultTo = exports.either = exports.equals = exports.isNil = exports.all = exports.some = exports.reduce = exports.filter = exports.map = exports.identity = exports.converge = exports.curry = exports.pipe = exports.compose = void 0;
 __exportStar(require("./types"), exports);
 /**
  *  compose :: ((a -> b), (b -> c),  ..., (y -> z)) -> a -> z
  */
 const compose = (...fns) => (...args) => fns.reduceRight((res, fn) => [fn.call(null, ...res)], args)[0];
 exports.compose = compose;
+/**
+ *  pipe :: ((a -> b), (b -> c),  ..., (y -> z)) -> z -> a
+ */
+const pipe = (...fns) => (...args) => fns.reduce((res, fn) => [fn.call(null, ...res)], args)[0];
+exports.pipe = pipe;
 /**
  *  curry :: ((a, b, ...) -> c) -> a -> b -> ... -> c
  */
@@ -58,7 +63,7 @@ exports.map = curry((fn, xs) => {
         : xs.map(fn);
 });
 /**
- *  filter :: (a -> b) -> [a] -> b
+ *  filter :: (a -> a) -> [a] -> [a]
  */
 exports.filter = curry((fn, xs) => {
     return xs === null || xs === undefined || xs.filter === undefined
@@ -69,13 +74,9 @@ exports.filter = curry((fn, xs) => {
 //                      -- Not? Monoids --
 // ============================================================
 /**
- *  map :: (a -> b) -> [a] -> b
+ *  reduce :: (a -> b) -> [a] -> b
  */
-exports.reduce = curry((fn, xs) => {
-    return xs === null || xs === undefined || xs.reduce === undefined
-        ? xs
-        : xs.reduce(fn);
-});
+exports.reduce = curry((fn, xs) => xs.reduce(fn));
 // ============================================================
 //                      -- Reduce --
 // ============================================================
@@ -241,27 +242,39 @@ exports.safeGet = safeGet;
 //                      -- math --
 // ============================================================
 /**
- *  add :: a -> b -> (a + b): number
+ *  add :: a -> b -> a + b
  */
 exports.add = curry((a, b) => a + b);
 /**
- *  subtract :: a -> b -> (a - b): number
+ *  subtract :: a -> b -> a - b
  */
 exports.subtract = curry((a, b) => a - b);
 /**
- *  gt :: a -> b -> (b > a): boolean
+ *  multiply :: a -> b -> a * b
+ */
+exports.multiply = curry((a, b) => a * b);
+/**
+ *  divide :: a -> b -> maybe(a / b)
+ */
+exports.divide = curry((a, b) => b > 0 ? exports.maybe(a / b) : exports.maybe(undefined));
+/**
+ *  divideBy :: a -> b -> maybe(b / a)
+ */
+exports.divideBy = curry((a, b) => a > 0 ? exports.maybe(b / a) : exports.maybe(undefined));
+/**
+ *  gt :: a -> b -> b > a
  */
 exports.gt = curry((a, b) => b > a);
 /**
- *  gte :: a -> b -> (b >= a): boolean
+ *  gte :: a -> b -> b >= a
  */
 exports.gte = curry((a, b) => b >= a);
 /**
- *  lt :: a -> b -> (b < a): boolean
+ *  lt :: a -> b -> b < a
  */
 exports.lt = curry((a, b) => b < a);
 /**
- *  lte :: a -> b -> (b <= a): boolean
+ *  lte :: a -> b -> b <= a
  */
 exports.lte = curry((a, b) => b <= a);
 // ============================================================
