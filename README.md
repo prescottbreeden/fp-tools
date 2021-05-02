@@ -1,47 +1,53 @@
 # fp-tools
-Smattering of fp utilitiess intended for speeding up prototyping, not production. 
-Has several deviations from Ramda that always irk me. Notable deviations include 
-a less strict typing on compose and gt and lt reversed cause why the hell would gt(1) mean x < 1 and not x > 1. 
+
+Smattering of fp utilitiess intended for speeding up prototyping, not production.
+Has several deviations from Ramda that always irk me. Notable deviations include
+a less strict typing on compose and pipe and gt and lt are reversed.
 
 ## Functions
-- compose 
-- curry 
-- converge 
-- identity 
-- map 
-- filter 
-- reduce 
-- some 
-- all 
-- isNil 
-- equals 
-- either 
-- defaultTo 
-- doNothing 
-- trace 
-- randomString (impure) 
-- toLower 
-- toUpper 
-- includes 
-- split 
-- splitAt 
-- concat 
-- head 
-- tail 
-- prop 
-- objProp 
-- safeGet 
-- add 
-- subtract 
-- gt 
-- gte 
-- lt 
-- lte 
-- maybe 
-- just 
-- nothing 
-- reject 
+
+- add
+- all
+- compose
+- concat
+- converge
+- curry
+- defaultTo
+- divide
+- divideBy
+- doNothing
+- either
+- equals
+- filter
+- gt
+- gte
+- head
+- identity
+- includes
+- isNil
+- just
+- lt
+- lte
+- map
+- maybe
+- nothing
+- objProp
+- pipe
+- prop
+- randomString (impure)
+- reduce
+- reject
+- safeGet
+- some
+- split
+- splitAt
+- subtract
+- tail
+- toLower
+- toUpper
+- trace
 
 ## Functors
-- Maybe 
-- Task 
+
+- Maybe
+- Task

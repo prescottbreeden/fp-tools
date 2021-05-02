@@ -1,12 +1,18 @@
 import { Filterable, Func, Mappable, Reducable, ReduceFunction } from './types';
 
-export * from './types'
+export * from './types';
 
 /**
  *  compose :: ((a -> b), (b -> c),  ..., (y -> z)) -> a -> z
  */
 export const compose = (...fns: any) => (...args: any) =>
   fns.reduceRight((res: any, fn: any) => [fn.call(null, ...res)], args)[0];
+
+/**
+ *  pipe :: ((a -> b), (b -> c),  ..., (y -> z)) -> z -> a
+ */
+export const pipe = (...fns: any) => (...args: any) =>
+  fns.reduce((res: any, fn: any) => [fn.call(null, ...res)], args)[0];
 
 /**
  *  curry :: ((a, b, ...) -> c) -> a -> b -> ... -> c
@@ -53,7 +59,7 @@ export const map = curry((fn: any, xs: Mappable) => {
 });
 
 /**
- *  filter :: (a -> b) -> [a] -> b
+ *  filter :: (a -> a) -> [a] -> [a]
  */
 export const filter = curry((fn: (x: any) => boolean, xs: Filterable) => {
   return xs === null || xs === undefined || xs.filter === undefined
@@ -65,13 +71,11 @@ export const filter = curry((fn: (x: any) => boolean, xs: Filterable) => {
 //                      -- Not? Monoids --
 // ============================================================
 /**
- *  map :: (a -> b) -> [a] -> b
+ *  reduce :: (a -> b) -> [a] -> b
  */
-export const reduce = curry((fn: ReduceFunction, xs: Reducable) => {
-  return xs === null || xs === undefined || xs.reduce === undefined
-    ? xs
-    : xs.reduce(fn);
-});
+export const reduce = curry((fn: ReduceFunction, xs: Reducable) =>
+  xs.reduce(fn),
+);
 
 // ============================================================
 //                      -- Reduce --
@@ -251,30 +255,46 @@ export function safeGet<T>(entity: T) {
 //                      -- math --
 // ============================================================
 /**
- *  add :: a -> b -> (a + b): number
+ *  add :: a -> b -> a + b
  */
 export const add = curry((a: number, b: number) => a + b);
 /**
- *  subtract :: a -> b -> (a - b): number
+ *  subtract :: a -> b -> a - b
  */
 export const subtract = curry((a: number, b: number) => a - b);
 
 /**
- *  gt :: a -> b -> (b > a): boolean
+ *  multiply :: a -> b -> a * b
+ */
+export const multiply = curry((a: number, b: number) => a * b);
+/**
+ *  divide :: a -> b -> maybe(a / b)
+ */
+export const divide = curry((a: number, b: number) =>
+  b > 0 ? maybe(a / b) : maybe(undefined),
+);
+/**
+ *  divideBy :: a -> b -> maybe(b / a)
+ */
+export const divideBy = curry((a: number, b: number) =>
+  a > 0 ? maybe(b / a) : maybe(undefined),
+);
+/**
+ *  gt :: a -> b -> b > a
  */
 export const gt = curry((a: number, b: number) => b > a);
 
 /**
- *  gte :: a -> b -> (b >= a): boolean
+ *  gte :: a -> b -> b >= a
  */
 export const gte = curry((a: number, b: number) => b >= a);
 
 /**
- *  lt :: a -> b -> (b < a): boolean
+ *  lt :: a -> b -> b < a
  */
 export const lt = curry((a: number, b: number) => b < a);
 /**
- *  lte :: a -> b -> (b <= a): boolean
+ *  lte :: a -> b -> b <= a
  */
 export const lte = curry((a: number, b: number) => b <= a);
 
