@@ -159,3 +159,4 @@ export declare const maybe: (x: any) => Maybe;
 export declare const nothing: Maybe;
 export declare const isSome: (m: Maybe) => boolean;
 export declare const isNothing: (m: Maybe) => boolean;
+export declare const chain: (...args: any) => any;

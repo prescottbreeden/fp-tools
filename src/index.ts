@@ -311,3 +311,6 @@ export const isSome = (m: Maybe) => m.isJust;
 
 // isNothing:: Functor -> boolean
 export const isNothing = (m: Maybe) => m.isNothing;
+
+// chain :: Monad m => (a -> m b) -> m a -> m b
+export const chain = curry((fn: any, m: any) => m.chain(fn));

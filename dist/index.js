@@ -10,7 +10,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isNothing = exports.isSome = exports.nothing = exports.maybe = exports.lte = exports.lt = exports.gte = exports.gt = exports.divideBy = exports.divide = exports.multiply = exports.subtract = exports.add = exports.safeGet = exports.objProp = exports.prop = exports.tail = exports.head = exports.concat = exports.splitAt = exports.split = exports.includes = exports.toUpper = exports.toLower = exports.randomString = exports.trace = exports.doNothing = exports.defaultTo = exports.either = exports.equals = exports.isNil = exports.all = exports.some = exports.reduce = exports.filter = exports.map = exports.identity = exports.converge = exports.curry = exports.pipe = exports.compose = void 0;
+exports.chain = exports.isNothing = exports.isSome = exports.nothing = exports.maybe = exports.lte = exports.lt = exports.gte = exports.gt = exports.divideBy = exports.divide = exports.multiply = exports.subtract = exports.add = exports.safeGet = exports.objProp = exports.prop = exports.tail = exports.head = exports.concat = exports.splitAt = exports.split = exports.includes = exports.toUpper = exports.toLower = exports.randomString = exports.trace = exports.doNothing = exports.defaultTo = exports.either = exports.equals = exports.isNil = exports.all = exports.some = exports.reduce = exports.filter = exports.map = exports.identity = exports.converge = exports.curry = exports.pipe = exports.compose = void 0;
 const Maybe_1 = require("./Maybe");
 __exportStar(require("./types"), exports);
 __exportStar(require("./Maybe"), exports);
@@ -290,4 +290,6 @@ exports.isSome = isSome;
 // isNothing:: Functor -> boolean
 const isNothing = (m) => m.isNothing;
 exports.isNothing = isNothing;
+// chain :: Monad m => (a -> m b) -> m a -> m b
+exports.chain = curry((fn, m) => m.chain(fn));
 //# sourceMappingURL=index.js.map
