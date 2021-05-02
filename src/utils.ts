@@ -63,21 +63,26 @@ export const filter = curry((fn: (x: any) => boolean, xs: Filterable) => {
     : xs.filter(fn);
 });
 
-// ============================================================
-//                      -- Not? Monoids --
-// ============================================================
 /**
- *  map :: (a -> b) -> [a] -> b
+ *  replaceItem :: string -> [a] -> a -> [a]
  */
-export const reduce = curry((fn: ReduceFunction, xs: Reducable) => {
-  return xs === null || xs === undefined || xs.reduce === undefined
-    ? xs
-    : xs.reduce(fn);
+export const replaceItem = curry((property: string, list: any[], b: any) => {
+  return list.map((a: any) => (a[property] === b[property] ? b : a));
 });
+
 
 // ============================================================
 //                      -- Reduce --
 // ============================================================
+/**
+ *  reduce :: (a -> b) -> [a] -> b
+ */
+export const reduce = curry((fn: ReduceFunction, agg: any, xs: Reducable) => {
+  return xs === null || xs === undefined || xs.reduce === undefined
+    ? xs
+    : xs.reduce(fn, agg);
+});
+
 /**
  *   some :: fn -> xs -> boolean
  */
@@ -185,7 +190,7 @@ export const includes = curry((a: string, b: string) => {
 export const split = curry((sep: string, str: string) => str.split(sep));
 
 /**
- *  split :: number -> xs | string -> [ xs | [string], xs | [string] ]
+ *  splitAt :: number -> xs | string -> [ xs | [string], xs | [string] ]
  */
 export const splitAt = curry((index: number, xs: any[] | string) => {
   const p1 = xs.slice(0, index);
@@ -218,7 +223,7 @@ export const head = (xs: any[] | string) => {
 };
 
 /**
- *  head :: [a] -> a
+ *  tail :: [a] -> a
  */
 export const tail = (xs: any[] | string) => {
   if (typeof xs === 'string' || Array.isArray(xs)) {
@@ -232,12 +237,15 @@ export const tail = (xs: any[] | string) => {
 };
 
 /**
+ *  set :: String -> a -> { string: a }
+ */
+export const set = curry((name: string, value: any) => ({ [name]: value }));
+/**
  *  prop :: String -> Object -> a
  */
 export const prop = curry((p: string, obj: any) =>
   isNil(obj) ? null : obj[p],
 );
-
 /**
  *  objProp :: Object -> String -> a
  */
@@ -256,6 +264,22 @@ export const add = curry((a: number, b: number) => a + b);
  *  subtract :: a -> b -> (a - b): number
  */
 export const subtract = curry((a: number, b: number) => a - b);
+/**
+ *  subtractBy :: a -> b -> (b - a): number
+ */
+export const subtractBy = curry((a: number, b: number) => b - a);
+/**
+ *  multiply :: a -> b -> (a - b): number
+ */
+export const multiply = curry((a: number, b: number) => a * b);
+/**
+ *  divide :: a -> b -> (a - b): number
+ */
+export const divide = curry((a: number, b: number) => a / b);
+/**
+ *  divideBy :: a -> b -> (a - b): number
+ */
+export const divideBy = curry((a: number, b: number) => b / a);
 
 /**
  *  gt :: a -> b -> (b > a): boolean
@@ -277,61 +301,10 @@ export const lt = curry((a: number, b: number) => b < a);
 export const lte = curry((a: number, b: number) => b <= a);
 
 // ============================================================
-//                  -- Functor Constructors --
+//                      -- misc --
 // ============================================================
-// Maybes
-// ============================================================
-//                      -- Maybe --
-// ============================================================
-export class Maybe {
-  $value: any;
 
-  get isNothing() {
-    return this.$value === null || this.$value === undefined;
-  }
-
-  get isJust() {
-    return !this.isNothing;
-  }
-
-  constructor(x: any) {
-    this.$value = x;
-  }
-
-  // ----- Pointed Maybe
-  static of(x: any) {
-    return new Maybe(x);
-  }
-
-  // ----- Functor Maybe
-  map(fn: Func) {
-    return this.isNothing ? this : Maybe.of(fn(this.$value));
-  }
-
-  // ----- Applicative Maybe
-  ap(f: any) {
-    return this.isNothing ? this : f.map(this.$value);
-  }
-
-  // ----- Monad Maybe
-  chain(fn: Func) {
-    return this.map(fn).join();
-  }
-
-  join() {
-    return this.isNothing ? this : this.$value;
-  }
-
-  // ----- Traversable Maybe
-  sequence(of: any) {
-    return this.traverse(of, identity);
-  }
-
-  traverse(of: any, fn: Func) {
-    return this.isNothing ? of(this) : fn(this.$value).map(Maybe.of);
-  }
-}
-export const maybe = (x: any) => Maybe.of(x);
-export const just = (x: any) => maybe(x);
-export const nothing = maybe(null);
-
+export const getEventTargetNameValue = compose(
+  converge(set, [prop('name'), prop('value')]),
+  prop('target')
+);
