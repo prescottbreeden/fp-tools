@@ -1,4 +1,4 @@
-import {Func, identity} from ".";
+import { Func, identity } from '.';
 
 // ============================================================
 //                      -- Maybe --
@@ -54,4 +54,3 @@ export class Maybe {
 export const maybe = (x: any) => Maybe.of(x);
 export const just = (x: any) => maybe(x);
 export const nothing = maybe(null);
-

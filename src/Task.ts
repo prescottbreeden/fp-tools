@@ -1,9 +1,6 @@
-// Tasks
+import { compose, Func, identity } from '.';
 // ============================================================
 //                      -- Task --
-
-import {compose, Func, identity} from ".";
-
 // ============================================================
 export class Task {
   fork: any;

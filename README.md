@@ -18,6 +18,7 @@ a less strict typing on compose and pipe and gt and lt are reversed.
 - doNothing
 - either
 - equals
+- eventTargetNameValue
 - filter
 - gt
 - gte
@@ -34,7 +35,7 @@ a less strict typing on compose and pipe and gt and lt are reversed.
 - objProp
 - pipe
 - prop
-- randomString (impure)
+- randomString
 - reduce
 - reject
 - safeGet

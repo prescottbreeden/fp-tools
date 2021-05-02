@@ -41,7 +41,6 @@ export const converge = (fn: Func, wraps: Func[]) => (arg: any) =>
  */
 export const identity = (x: any) => x;
 
-
 // ============================================================
 //                      -- Monoids --
 // ============================================================
@@ -69,7 +68,6 @@ export const filter = curry((fn: (x: any) => boolean, xs: Filterable) => {
 export const replaceItem = curry((property: string, list: any[], b: any) => {
   return list.map((a: any) => (a[property] === b[property] ? b : a));
 });
-
 
 // ============================================================
 //                      -- Reduce --
@@ -304,7 +302,7 @@ export const lte = curry((a: number, b: number) => b <= a);
 //                      -- misc --
 // ============================================================
 
-export const getEventTargetNameValue = compose(
+export const eventTargetNameValue = compose(
   converge(set, [prop('name'), prop('value')]),
-  prop('target')
+  prop('target'),
 );
