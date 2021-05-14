@@ -1,8 +1,9 @@
 {
   "name": "fp-tools",
-  "version": "1.0.6",
+  "version": "2.0.1",
   "description": "javascript functional programming utilities",
   "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "repository": "github.com/prescottbreeden/fp-tools",
   "author": "prescott breeden",
   "license": "MIT",
