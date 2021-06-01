@@ -1,4 +1,5 @@
-import { compose, Func, identity } from '.';
+import util from 'util';
+import { compose, identity } from '.';
 // ============================================================
 //                      -- Task --
 // ============================================================
@@ -8,18 +9,22 @@ export class Task {
     this.fork = fork;
   }
 
+  [util.inspect.custom]() {
+    return 'Task(?)';
+  }
+
   static rejected(x: any) {
-    return new Task((rej: Func, _: any) => rej(x));
+    return new Task((rej: any, _: any) => rej(x));
   }
 
   // ----- Pointed (Task a)
   static of(x: any) {
-    return new Task((_: any, resolve: Func) => resolve(x));
+    return new Task((_: any, resolve: any) => resolve(x));
   }
 
-  // ----- Functor (Task a)
-  map(fn: Func) {
-    return new Task((rej: Func, resolve: Func) =>
+  // ----- anytor (Task a)
+  map(fn: any) {
+    return new Task((rej: any, resolve: any) =>
       this.fork(rej, compose(resolve, fn)),
     );
   }
@@ -31,8 +36,8 @@ export class Task {
 
   // ----- Monad (Task a)
   chain(fn: any) {
-    return new Task((rej: Func, resolve: Func) =>
-      this.fork(reject, (x: any) => fn(x).fork(rej, resolve)),
+    return new Task((rej: any, resolve: any) =>
+      this.fork(rej, (x: any) => fn(x).fork(rej, resolve)),
     );
   }
 
@@ -40,4 +45,3 @@ export class Task {
     return this.chain(identity);
   }
 }
-export const reject = (x: any) => Task.rejected(x);

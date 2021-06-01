@@ -8,7 +8,7 @@ import {
   divide,
   divideBy,
   either,
-  equals,
+  eq,
   filter,
   identity,
   isNil,
@@ -73,21 +73,12 @@ describe('map', () => {
     const nums = [1, 2, 3, 4, 5];
     expect(map(add2, nums)).toStrictEqual([3, 4, 5, 6, 7]);
   });
-  it('returns xs if xs is not mappable', () => {
-    const add2 = add(2);
-    const nums = null;
-    expect(map(add2, nums)).toBe(null);
-  });
 });
 
 describe('filter', () => {
   it('filters list based on predicate', () => {
     const nums = [1, 2, 3, 4, 5];
-    expect(filter(equals(2), nums)).toStrictEqual([2]);
-  });
-  it('returns xs if xs is not filterable', () => {
-    const nums = null;
-    expect(filter(equals(2), nums)).toStrictEqual(null);
+    expect(filter(eq(2), nums)).toStrictEqual([2]);
   });
 });
 
@@ -102,8 +93,8 @@ describe('isNil', () => {
 
 describe('equals', () => {
   it('returns true if both args are the same.', () => {
-    expect(equals(2, 2)).toBe(true);
-    expect(equals('dog', 'cat')).toBe(false);
+    expect(eq(2, 2)).toBe(true);
+    expect(eq('dog', 'cat')).toBe(false);
   });
 });
 

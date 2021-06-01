@@ -1,27 +1,15 @@
 import { Maybe } from './Maybe';
-import { Filterable, Func, Mappable, Reducable, ReduceFunction } from './types';
-
-export * from './types';
+import { IO } from './IO';
+import { Task } from './Task';
 export * from './Maybe';
 export * from './Task';
+export * from './IO';
+export * from './Either';
 
-export * from './types';
-
-/**
- *  compose :: ((a -> b), (b -> c),  ..., (y -> z)) -> a -> z
- */
 export const compose = (...fns: any) => (...args: any) =>
   fns.reduceRight((res: any, fn: any) => [fn.call(null, ...res)], args)[0];
-
-/**
- *  pipe :: ((a -> b), (b -> c),  ..., (y -> z)) -> z -> a
- */
 export const pipe = (...fns: any) => (...args: any) =>
   fns.reduce((res: any, fn: any) => [fn.call(null, ...res)], args)[0];
-
-/**
- *  curry :: ((a, b, ...) -> c) -> a -> b -> ... -> c
- */
 export function curry(fn: (...args: any) => any) {
   const arity = fn.length;
 
@@ -33,284 +21,119 @@ export function curry(fn: (...args: any) => any) {
     return fn.call(null, ...args);
   };
 }
+export const converge = (fn: any, wraps: any[]) => (arg: any) =>
+  fn(...wraps.map((wrap: any) => wrap(arg)));
 
-/**
- * takes a function requiring 2 arguments and an array of functions. each func
- * in the array will be applied against the argument of the returned function
- * and then passed as the arguments to the first function.
- * @example converge(concat, [prop('firstName'), prop('lastName')]);
- * @param fn the function to be called last
- * @param wraps array of functions to supply as arguments to fn
- * @returns (fn, ...wraps) -> arg -> fn(...wraps(arg))
- */
-export const converge = (fn: Func, wraps: Func[]) => (arg: any) =>
-  fn(...wraps.map((wrap: Func) => wrap(arg)));
-
-// ============================================================
-//                      -- Monoids --
-// ============================================================
-
-/**
- *  identity :: x -> x
- */
-export const identity = (x: any) => x;
-/**
- *  map :: (a -> b) -> [a] -> [b]
- */
-export const map = curry((fn: any, xs: Mappable) => {
-  return xs === null || xs === undefined || xs.map === undefined
-    ? xs
-    : xs.map(fn);
-});
-
-/**
- *  filter :: (a -> a) -> [a] -> [a]
- */
-export const filter = curry((fn: (x: any) => boolean, xs: Filterable) => {
-  return xs === null || xs === undefined || xs.filter === undefined
-    ? xs
-    : xs.filter(fn);
-});
-
-// ============================================================
-//                      -- Not? Monoids --
-// ============================================================
-/**
- *  reduce :: (a -> b) -> [a] -> b
- */
-export const reduce = curry((fn: ReduceFunction, xs: Reducable) =>
-  xs.reduce(fn),
+export const always = curry((a, b) => a);
+export const concat = curry((a, b) => a.concat(b));
+export const flip = curry((fn, a, b) => fn(b, a));
+export const append = flip(concat);
+export const add = curry((a, b) => a + b);
+export const all = curry((pred, list) =>
+  list.reduce((prev: any, curr: any) => (prev ? pred(curr) : prev), false),
 );
-
-// ============================================================
-//                      -- Reduce --
-// ============================================================
-/**
- *   some :: fn -> xs -> boolean
- */
-export const some = curry((pred: (x: any) => boolean, list: any[]) => {
-  return list === null || list === undefined || list.reduce === undefined
-    ? false
-    : list.reduce((prev: any, curr: any) => {
-        return prev ? prev : pred(curr);
-      }, false);
-});
-
-/**
- *   all :: fn -> xs -> boolean
- */
-export const all = curry((pred: (x: any) => boolean, list: any[]) => {
-  return list === null || list === undefined || list.reduce === undefined
-    ? false
-    : list.reduce((prev: any, curr: any) => {
-        return prev ? pred(curr) : prev;
-      }, false);
-});
-
-// ============================================================
-//                      -- logic --
-// ============================================================
-/**
- *   isNil :: a -> boolean
- */
-export const isNil = (x: any) => x === null || x === undefined;
-
-/**
- *  equals :: a -> a -> bool
- */
-export const equals = curry((a: any, b: any) => {
-  return JSON.stringify(a) === JSON.stringify(b);
-});
-
-/**
- *  either :: f -> g -> x -> f(x) | g(x)
- */
-export const either = curry((pred1: Func, pred2: Func, val: any) => {
-  return isNil(val) ? pred2(val) : pred1(val);
-});
-
-/**
- *   defaultTo :: a -> b -> a | b
- */
-export const defaultTo = curry((def: any, val: any) => (val ? val : def));
-
-/**
- *   doNothing :: a -> null
- */
+export const chain = curry((fn, m) => m.chain(fn));
+export const defaultTo = curry((def, val) => (val ? val : def));
+export const divide = curry((a, b) =>
+  b > 0 ? Maybe.of(a / b) : Maybe.of(null),
+);
+export const divideBy = curry((a, b) =>
+  a > 0 ? Maybe.of(b / a) : Maybe.of(null),
+);
 export const doNothing = (_: any) => null;
-
-// ============================================================
-//                      -- debug --
-// ============================================================
-/**
- *  trace :: string -> a -> a
- */
-export const trace = curry((msg: string, a: any) => {
-  console.log(msg, a);
-  return a;
-});
-
-// ============================================================
-//          -- strings / numbers / lists / objects --
-// ============================================================
-
-/**
- *  randomString :: () -> string
- */
-export const randomString = () => {
-  return Math.random().toString(36).substring(7);
-};
-
-/**
- *  toLower :: string -> string
- */
-export const toLower = (str: string) => str.toLowerCase();
-
-/**
- *  toUpper :: string -> string
- */
-export const toUpper = (str: string) => str.toUpperCase();
-
-/**
- *  includes :: string -> boolean
- */
-export const includes = curry((a: string, b: string) => {
-  if (typeof b === 'string') {
-    return b.includes(a);
-  }
-  return false;
-});
-
-/**
- *  split :: string -> string -> [ string ]
- */
-export const split = curry((sep: string, str: string) => str.split(sep));
-
-/**
- *  split :: number -> xs | string -> [ xs | [string], xs | [string] ]
- */
-export const splitAt = curry((index: number, xs: any[] | string) => {
+export const either = curry((pred1, pred2, val) =>
+  isNil(val) ? pred2(val) : pred1(val),
+);
+export const eq = curry((a, b) => a === b);
+export const deepEq = curry((a, b) => JSON.stringify(a) === JSON.stringify(b));
+export const filter = curry((fn, xs) => xs.filter(fn));
+export const forEach = curry((fn, xs) => xs.forEach(fn));
+export const gt = curry((a, b) => b > a);
+export const gte = curry((a, b) => b >= a);
+export const head = (xs: any[] | string) => xs[0];
+export const identity = (x: any) => x;
+export const includes = curry((a, b) => b.includes(a));
+export const intercalate = curry((str, xs) => xs.join(str));
+export const isNil = (x: any) => x === null || x === undefined;
+export const isNothing = (m: Maybe) => m.isNothing;
+export const isSome = (m: Maybe) => m.isJust;
+export const join = (m: any) => m.join();
+export const lt = curry((a, b) => b < a);
+export const lte = curry((a, b) => b <= a);
+export const map = curry((fn, xs) => xs.map(fn));
+export const match = curry((re, str) => re.test(str));
+export const multiply = curry((a, b) => a * b);
+export const nothing = Maybe.of(null);
+export const objProp = curry((obj, property) => prop(property, obj));
+export const prop = curry((p, obj) => (isNil(obj) ? null : obj[p]));
+export const randomString = () => Math.random().toString(36).substring(7);
+export const reduce = curry((fn, xs) => xs.reduce(fn));
+export const reverse = (x: any) =>
+  Array.isArray(x) ? x.reverse() : x.split('').reverse().join('');
+export const some = curry((pred, list) =>
+  list.reduce((prev: any, curr: any) => (prev ? prev : pred(curr)), false),
+);
+export const split = curry((sep, str) => str.split(sep));
+export const splitAt = curry((index, xs) => {
   const p1 = xs.slice(0, index);
   const p2 = xs.slice(index);
   return [p1, p2];
 });
-
-/**
- *  concat :: string -> string -> string
- */
-export const concat = curry((a: string, b: string) => {
-  if (typeof a === 'string' && typeof b === 'string') {
-    return a.concat(b);
-  }
-  return '';
+export const subtract = curry((a, b) => a - b);
+export const tail = (xs: any[] | string) => xs[xs.length - 1];
+export const take = curry((n, xs) => xs.slice(0, n));
+export const toLower = (str: string) => str.toLowerCase();
+export const toUpper = (str: string) => str.toUpperCase();
+export const trace = curry((msg, a) => {
+  console.log(msg, a);
+  return a;
 });
+export const traverse = curry((of, fn, f) => f.traverse(of, fn));
+export const unsafePerformIO = (io: IO) => io.unsafePerformIO();
 
-/**
- *  head :: [a] -> a
- */
-export const head = (xs: any[] | string) => {
-  if (typeof xs === 'string' || Array.isArray(xs)) {
-    if (xs.length === 0) {
-      return null;
-    } else if (xs.length > 0) {
-      return xs[0];
+export const safeHead = compose(Maybe.of, head);
+export const safeProp = curry((p, obj) => compose(Maybe.of, prop(p))(obj));
+export const safeTail = compose(Maybe.of, tail);
+export const sequence = curry((of, f) => f.sequence(of));
+export const sortBy = curry((fn, xs) =>
+  xs.sort((a: any, b: any) => {
+    if (fn(a) === fn(b)) {
+      return 0;
     }
-    return null;
-  }
-};
-
-/**
- *  head :: [a] -> a
- */
-export const tail = (xs: any[] | string) => {
-  if (typeof xs === 'string' || Array.isArray(xs)) {
-    if (xs.length === 0) {
-      return null;
-    } else if (xs.length > 0) {
-      return xs[xs.length - 1];
-    }
-    return null;
-  }
-};
-
-/**
- *  prop :: String -> Object -> a
- */
-export const prop = curry((p: string, obj: any) =>
-  isNil(obj) ? null : obj[p],
+    return fn(a) > fn(b) ? 1 : -1;
+  }),
 );
-
-/**
- *  objProp :: Object -> String -> a
- */
-export const objProp = curry((obj: any, property: string) => {
-  return prop(property, obj);
+export const maybe = curry((v, f, m) => {
+  if (m.isNothing) {
+    return v;
+  }
+  return f(m.$value);
 });
+export const reject = (a: any) => Task.rejected(a);
 
-/*
- *  safeGet :: obj -> string -> a | undefined
- */
-export function safeGet<T>(entity: T) {
-  return (property: keyof T) => {
-    return prop(property as string, entity);
-  };
-}
-
-// ============================================================
-//                      -- math --
-// ============================================================
-/**
- *  add :: a -> b -> a + b
- */
-export const add = curry((a: number, b: number) => a + b);
-/**
- *  subtract :: a -> b -> a - b
- */
-export const subtract = curry((a: number, b: number) => a - b);
-
-/**
- *  multiply :: a -> b -> a * b
- */
-export const multiply = curry((a: number, b: number) => a * b);
-/**
- *  divide :: a -> b -> maybe(a / b)
- */
-export const divide = curry((a: number, b: number) =>
-  b > 0 ? maybe(a / b) : maybe(undefined),
-);
-/**
- *  divideBy :: a -> b -> maybe(b / a)
- */
-export const divideBy = curry((a: number, b: number) =>
-  a > 0 ? maybe(b / a) : maybe(undefined),
-);
-/**
- *  gt :: a -> b -> b > a
- */
-export const gt = curry((a: number, b: number) => b > a);
-
-/**
- *  gte :: a -> b -> b >= a
- */
-export const gte = curry((a: number, b: number) => b >= a);
-
-/**
- *  lt :: a -> b -> b < a
- */
-export const lt = curry((a: number, b: number) => b < a);
-/**
- *  lte :: a -> b -> b <= a
- */
-export const lte = curry((a: number, b: number) => b <= a);
-
-export const maybe = (x: any) => Maybe.of(x);
-export const nothing = maybe(null);
-
-// isSome :: Functor -> boolean
-export const isSome = (m: Maybe) => m.isJust;
-
-// isNothing:: Functor -> boolean
-export const isNothing = (m: Maybe) => m.isNothing;
-
-// chain :: Monad m => (a -> m b) -> m a -> m b
-export const chain = curry((fn: any, m: any) => m.chain(fn));
+export const inspect = (x: any) => {
+  if (x && typeof x.inspect === 'function') {
+    return x.inspect();
+  }
+  function inspectFn(f: any) {
+    return f.name ? f.name : f.toString();
+  }
+  function inspectTerm(t: any): any {
+    switch (typeof t) {
+      case 'string':
+        return `'${t}'`;
+      case 'object': {
+        const ts = Object.keys(t).map((k) => [k, inspect(t[k])]);
+        return `{${ts.map((kv) => kv.join(': ')).join(', ')}}`;
+      }
+      default:
+        return String(t);
+    }
+  }
+  function inspectArgs(args: any): any {
+    return Array.isArray(args)
+      ? `[${args.map(inspect).join(', ')}]`
+      : inspectTerm(args);
+  }
+  return typeof x === 'function' ? inspectFn(x) : inspectArgs(x);
+};
